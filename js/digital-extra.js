@@ -88,6 +88,53 @@ FIGS.tt = (() => {
   return out;
 })();
 
+// ---------------- yksittäiset porttisymbolit ja kiikut (IEC 60617) ----------------
+// kaksi tuloa, yksi lähtö: laatikko 190..290 x 100..220, tulot A ja B, lähtö F
+const _sym2 = (label, bubble) => {
+  const x = 190, y = 100, w = 100, h = 120, yA = 135, yB = 185, yO = 160;
+  return _gate(x, y, w, h, label) +
+    `<path d="M90 ${yA} H${x} M90 ${yB} H${x} M${x + w + (bubble ? 10 : 0)} ${yO} H400"/>` +
+    (bubble ? `<circle cx="${x + w + 5}" cy="${yO}" r="5"/>` : "") +
+    _lbl(58, yA + 8, "A") + _lbl(58, yB + 8, "B") + _lbl(408, yO + 8, "F");
+};
+// yksi tulo, yksi lähtö: NOT ja puskuri
+const _sym1 = (label, bubble) => {
+  const x = 190, y = 120, w = 90, h = 80, yI = 160;
+  return _gate(x, y, w, h, label) +
+    `<path d="M90 ${yI} H${x} M${x + w + (bubble ? 10 : 0)} ${yI} H400"/>` +
+    (bubble ? `<circle cx="${x + w + 5}" cy="${yI}" r="5"/>` : "") +
+    _lbl(58, yI + 8, "A") + _lbl(408, yI + 8, "F");
+};
+FIGS.or = _sym2("≥1", false);
+FIGS.nor = _sym2("≥1", true);
+FIGS.xor = _sym2("=1", false);
+FIGS.xnor = _sym2("=1", true);
+FIGS.nand = _sym2("&", true);
+FIGS.not = _sym1("1", true);
+FIGS.buf = _sym1("1", false);
+
+// JK-kiikku: tulot 1J, C1 (kello, kolmio) ja 1K; lähdöt Q ja Q̄
+FIGS.jk = `<rect x="180" y="60" width="140" height="160"/><path d="M100 100 H180 M100 150 H180 M100 200 H180 M180 143 L192 150 L180 157 M320 100 H400 M330 200 H400"/><circle cx="325" cy="200" r="5"/>` +
+  _lbl(186, 108, "1J") + _lbl(186, 208, "1K") + _lbl(198, 158, "C1") + _lbl(326, 92, "Q") + _lbl(340, 190, "Q̄") +
+  _lbl(56, 106, "J") + _lbl(56, 156, "C") + _lbl(56, 206, "K");
+
+// T-kiikku: tulo 1T, kello C1 ja lähdöt Q ja Q̄
+FIGS.tff = `<rect x="180" y="70" width="140" height="140"/><path d="M100 110 H180 M100 170 H180 M180 163 L192 170 L180 177 M320 110 H400 M330 170 H400"/><circle cx="325" cy="170" r="5"/>` +
+  _lbl(186, 118, "1T") + _lbl(198, 178, "C1") + _lbl(326, 102, "Q") + _lbl(340, 160, "Q̄") +
+  _lbl(56, 116, "T") + _lbl(56, 176, "C");
+
+DIG.push(
+  { id: 305, label: "P10", cat: "DT · Piirrä kytkentä", type: "draw", q: "Piirrä OR-portin symboli eurooppalaisella merkinnällä (≥1): kaksi tuloa A ja B vasemmalla, lähtö F oikealla.", fig: "or" },
+  { id: 306, label: "P11", cat: "DT · Piirrä kytkentä", type: "draw", q: "Piirrä NOT-portin symboli (1 ja negaatiopallo lähdössä): tulo A vasemmalla, lähtö F oikealla.", fig: "not" },
+  { id: 307, label: "P12", cat: "DT · Piirrä kytkentä", type: "draw", q: "Piirrä NAND-portin symboli (& ja negaatiopallo lähdössä): tulot A ja B, lähtö F.", fig: "nand" },
+  { id: 308, label: "P13", cat: "DT · Piirrä kytkentä", type: "draw", q: "Piirrä NOR-portin symboli (≥1 ja negaatiopallo lähdössä): tulot A ja B, lähtö F.", fig: "nor" },
+  { id: 309, label: "P14", cat: "DT · Piirrä kytkentä", type: "draw", q: "Piirrä XOR-portin symboli (=1): tulot A ja B, lähtö F.", fig: "xor" },
+  { id: 310, label: "P15", cat: "DT · Piirrä kytkentä", type: "draw", q: "Piirrä XNOR-portin symboli (=1 ja negaatiopallo lähdössä): tulot A ja B, lähtö F.", fig: "xnor" },
+  { id: 311, label: "P16", cat: "DT · Piirrä kytkentä", type: "flash", q: "Mikä on puskuri (buffer) ja miten se piirretään IEC-merkinnällä?", answer: "Puskuri vahvistaa signaalia eikä muuta loogista arvoa: lähtö = tulo. Merkintä on 1 ilman negaatiopalloa.", fig: "buf" },
+  { id: 312, label: "P17", cat: "DT · Piirrä kytkentä", type: "draw", q: "Piirrä JK-kiikun symboli IEC-merkinnällä: tulot 1J, 1K ja kello C1 (kolmio), lähdöt Q ja Q̄.", fig: "jk" },
+  { id: 313, label: "P18", cat: "DT · Piirrä kytkentä", type: "draw", q: "Piirrä T-kiikun symboli IEC-merkinnällä: tulo 1T, kello C1, lähdöt Q ja Q̄.", fig: "tff" }
+);
+
 // lisätehtävät digitekniikkaan (kortteina, kuten muut kortit)
 DIG.push(
   { id: 301, label: "P6", cat: "DT · Piirrä kytkentä", type: "flash",
@@ -107,3 +154,43 @@ DIG.push(
     answer: "Kaksi NOT-porttia tekee B' ja C'. Kaksi AND-porttia tekee AB' ja C'D. OR-portti yhdistää ne F:ksi.",
     fig: "abc" }
 );
+
+// ---------------- totuustaulut kytkentöihin ja porttisymboleihin ----------------
+// Yleinen totuustaulukuvan piirtäjä: sarakkeet tuloille ja lähdöille, rivit annetaan valmiina.
+const _bits = n => Array.from({ length: 1 << n }, (_, k) => Array.from({ length: n }, (_, j) => (k >> (n - 1 - j)) & 1));
+const _ttFig = (inHeads, outHeads, rows) => {
+  const heads = [...inHeads, ...outHeads];
+  const n = heads.length;
+  const colW = Math.min(90, Math.floor(460 / n));
+  const x0 = (500 - colW * n) / 2 + colW / 2;
+  const rowH = rows.length <= 4 ? 40 : 16;
+  const fs = rows.length <= 4 ? 22 : 15;
+  let s = heads.map((h, i) => `<text x="${x0 + i * colW}" y="28" font-size="18" text-anchor="middle" fill="#e8ecff" stroke="none">${h}</text>`).join("");
+  s += `<path d="M${x0 - colW / 2} 38 H${x0 + (n - 1) * colW + colW / 2}"/>`;
+  rows.forEach((row, r) => {
+    const y = 38 + (r + 1) * rowH - 8;
+    row.forEach((v, i) => {
+      const isOut = i >= inHeads.length;
+      s += `<text x="${x0 + i * colW}" y="${y}" font-size="${fs}" text-anchor="middle" fill="${isOut ? "#facc15" : "#e8ecff"}" stroke="none">${v}</text>`;
+    });
+  });
+  return s;
+};
+
+FIGS.ttAND  = _ttFig(["A", "B"], ["Y"], _bits(2).map(([a, b]) => [a, b, a & b]));
+FIGS.ttOR   = _ttFig(["A", "B"], ["Y"], _bits(2).map(([a, b]) => [a, b, a | b]));
+FIGS.ttNAND = _ttFig(["A", "B"], ["Y"], _bits(2).map(([a, b]) => [a, b, 1 - (a & b)]));
+FIGS.ttNOR  = _ttFig(["A", "B"], ["Y"], _bits(2).map(([a, b]) => [a, b, 1 - (a | b)]));
+FIGS.ttXOR  = _ttFig(["A", "B"], ["Y"], _bits(2).map(([a, b]) => [a, b, a ^ b]));
+FIGS.ttXNOR = _ttFig(["A", "B"], ["Y"], _bits(2).map(([a, b]) => [a, b, 1 - (a ^ b)]));
+FIGS.ttNOT  = _ttFig(["A"], ["Y"], [[0, 1], [1, 0]]);
+FIGS.ttBUF  = _ttFig(["A"], ["Y"], [[0, 0], [1, 1]]);
+// (AB)' + C'D
+FIGS.ttF1 = _ttFig(["A", "B", "C", "D"], ["F"], _bits(4).map(([a, b, c, d]) => [a, b, c, d, (1 - (a & b)) | ((1 - c) & d)]));
+// JK- ja T-kiikun ominaistaulut (Q(t+1))
+FIGS.ttJK = _ttFig(["J", "K"], ["Q(t+1)"], [[0, 0, "Q(t)"], [0, 1, "0"], [1, 0, "1"], [1, 1, "Q̄(t)"]]);
+FIGS.ttT  = _ttFig(["T"], ["Q(t+1)"], [[0, "Q(t)"], [1, "Q̄(t)"]]);
+
+// liitä totuustaulu kortteihin id:n perusteella
+const _TT = { 301: "ttF1", 302: "ttF1", 304: "tt", 305: "ttOR", 306: "ttNOT", 307: "ttNAND", 308: "ttNOR", 309: "ttXOR", 310: "ttXNOR", 311: "ttBUF", 312: "ttJK", 313: "ttT" };
+DIG.forEach(d => { if (_TT[d.id]) d.tt = _TT[d.id]; });
