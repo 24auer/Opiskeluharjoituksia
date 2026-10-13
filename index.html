@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ohjelmointi ja digitekniikka</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <span class="code">TVT26SP</span>
+  <span class="title">Opiskeluharjoituksia</span>
+</header>
+
+<!-- gnome nurkassa -->
+<svg id="gnomecorner" viewBox="0 0 100 100" aria-label="gnome">
+  <polygon points="50,2 70,44 30,44" fill="#ff2d6f"/>
+  <circle cx="50" cy="18" r="5" fill="#fff"/>
+  <circle cx="50" cy="52" r="17" fill="#fcd7b6"/>
+  <circle cx="44" cy="50" r="2.4" fill="#222"/>
+  <circle cx="56" cy="50" r="2.4" fill="#222"/>
+  <circle cx="41" cy="57" r="3" fill="#ff8a9a" opacity=".7"/>
+  <circle cx="59" cy="57" r="3" fill="#ff8a9a" opacity=".7"/>
+  <ellipse cx="50" cy="60" rx="3" ry="1.8" fill="#c0392b"/>
+  <path d="M35 60 Q50 98 65 60 Z" fill="#f5f5f5"/>
+  <path d="M30 88 Q50 100 70 88 L72 100 H28 Z" fill="#2563eb"/>
+</svg>
+
+<!-- prank-kuva: tallenna kuva nimellä prank.png samaan kansioon -->
+<div id="prank" class="hidden"><div class="prank-text">miksi painoit häntä</div></div>
+<aside>
+  <h2>Aiheet</h2>
+  <div id="cats"></div>
+  <details data-key="tasks" open>
+    <summary>Tehtävät</summary>
+    <input id="search" class="search" placeholder="Hae tunnuksella, esim. M12 tai D5" spellcheck="false">
+    <div id="qlist" class="qlist"></div>
+  </details>
+  <div class="progwrap">
+    <div class="progbar"><span id="progfill"></span></div>
+    <p class="progtext">Valmiina <span id="progress">0/33</span></p>
+    <button id="resetprog" class="resetbtn">Nollaa edistyminen</button>
+  </div>
+</aside>
+
+<main>
+  <div class="card" id="card"></div>
+  <div class="nav">
+    <button class="ghost" id="prev">← Edellinen</button>
+    <button class="ghost" id="next">Seuraava →</button>
+  </div>
+</main>
+
+<script src="js/programming-data.js"></script>
+<script src="js/digital-data.js"></script>
+<script src="js/draw.js"></script>
+<script src="js/digital-tasks.js"></script>
+<script src="js/math-data.js"></script>
+<script src="js/app.js"></script>
+<footer class="botbar">Jos löytyy väärä tai järjetön vastaus, pistäkää Discord DM @hazemil tai&nbsp;&nbsp;<a href="mailto:mikke.laurinolli@gmail.com?subject=korjaa%20paska">email</a>&nbsp;&nbsp;||&nbsp;&nbsp;emilaur 2026 rotat</footer>
+</body>
+</html>

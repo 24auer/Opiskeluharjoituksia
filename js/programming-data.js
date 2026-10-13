@@ -1,0 +1,88 @@
+// ---------------------------------------------------------------
+// Asetus: koodin oikeellisuuden tarkistus.
+// Selain ei voi kääntää C-koodia itse. Aseta tähän palvelimesi
+// osoite, joka vastaanottaa POST {id, code} ja palauttaa
+// {ok: true|false, output: "..."}. Jos null, näytetään vain malli.
+const CHECK_ENDPOINT = null;
+// ---------------------------------------------------------------
+
+const CATS = ["Perusteet", "Muuttujat", "Ohjaus", "Syöte ja tulostus", "Taulukot", "Funktiot", "Koodaus"];
+
+// type: "single" | "multi" | "drag" | "code"
+// drag: tpl sisältää {0},{1}...; ans = oikeat sanat järjestyksessä; bank = sanapankki
+const Q = [
+{id:1, cat:"Funktiot", type:"single", q:"Mikä on palautusarvon tyyppi funktiolla, jonka prototyyppi on:\n\nint func(char x, float v, double t);",
+ opts:["float","int","double","char"], ans:[1], why:"Palautusarvon tyyppi on ensimmäinen sana: int."},
+{id:2, cat:"Funktiot", type:"single", q:"Mikä seuraavista on täydellinen funktion toteutus?",
+ opts:["int funct(int x) {return x+1;}","int funct();","void funct(int) {printf( \"Hello\" );","void funct(x) {printf( \"Hello\" ); }"], ans:[0], why:"Toteutuksessa on paluutyyppi, parametrit ja runko kokonaan."},
+{id:3, cat:"Muuttujat", type:"multi", q:"Valitse paikkansa pitävät väittämät.",
+ opts:["Muuttuja float piinLikiArvo voi sisältää luvun 3.141","On hyvä tapa nimetä muuttuja alkamaan isolla alkukirjaimella","Muuttujalle täytyy alustaa tyyppi","Voit käyttää muuttujan nimenä \"int\""], ans:[0,2], why:"Kohta 4 on virheellinen, koska int on varattu avainsana."},
+{id:4, cat:"Funktiot", type:"multi", q:"Mitkä seuraavista ovat oikean muotoisia funktion kutsuja?",
+ opts:["funct();","int funct();","x=funct();","funct x;","funct;"], ans:[0,2], why:"Kutsu on nimi sulkeissa. Tyyppimäärittely ja ilman sulkeita oleva nimi eivät ole kutsuja."},
+{id:5, cat:"Funktiot", type:"single", q:"Mikä on palautusarvon tyyppi funktiolla, jonka prototyyppi on:\n\nint func(char x, float v, double t);",
+ opts:["double","char","int","float"], ans:[2], why:"Sama kuin tehtävä 1: palautusarvo on int."},
+{id:6, cat:"Ohjaus", type:"single", q:"Valitse oikea for-silmukan määrittely.",
+ opts:["for int i = 8; i < 10; i++ { }","for (int i = 8; i < 10; i++) { }","loop (int i = 8; i < 10; i++) { }","for (i < 10; i++) { }"], ans:[1], why:"for-silmukka vaatii sulkeet alustus; ehto; päivitys."},
+{id:7, cat:"Syöte ja tulostus", type:"drag",
+ tpl:"{0} (x=1; x<5; x++) {\n    printf(\"Anna luku \\n\");\n    scanf(\"%d\", {1});\n}",
+ bank:["for","while","&luku","luku"], ans:["for","&luku"], why:"Silmukka on for ja scanf tarvitsee muistiosoitteen &luku."},
+{id:8, cat:"Perusteet", type:"single", q:"Mitä symbolia käytetään rivin kommentoimiseen?",
+ opts:["##","**","//","#","--"], ans:[2], why:"C:ssä rivikommentti alkaa //."},
+{id:9, cat:"Ohjaus", type:"single", q:"Mikä seuraavista on oikea lauseke, kun halutaan jakojäännös laskutoimituksesta 7 jaettuna 3:lla?",
+ opts:["7 / 3","7 % 3","mod(7,3)","mudulo(7,3)"], ans:[1], why:"Jakojäännös saadaan %-operaattorilla."},
+{id:10, cat:"Perusteet", type:"single", q:"Mikä on ainoa funktio, jonka kaikkien C-ohjelmien tulee sisältää?",
+ opts:["start()","program()","main()","system()"], ans:[2], why:"Ohjelman suoritus alkaa main-funktiosta."},
+{id:11, cat:"Syöte ja tulostus", type:"multi", q:"Millä funktiolla voidaan lukea käyttäjän antama vastaus?",
+ opts:["scanf()","read()","readline()","gets()"], ans:[0,3], why:"scanf ja gets lukevat syötettä C:ssä."},
+{id:12, cat:"Perusteet", type:"multi", q:"Mitä merkkejä käytetään lohkon aloittamiseen ja päättämiseen?",
+ opts:["-> ja <-","( ja )","BEGIN ja END","{ ja }"], ans:[3], why:"C:ssä lohko on aaltosulkeiden välissä."},
+{id:13, cat:"Funktiot", type:"drag",
+ tpl:"{0} calculate(int a, int b) {\n\n    return a+b;\n\n}",
+ bank:["int","float","void","return"], ans:["int"], why:"Funktion paluutyyppi on int, koska se palauttaa kokonaisluvun."},
+{id:14, cat:"Muuttujat", type:"single", q:"Mitä seuraava ohjelma tulostaa?\n\nint main() {\n    float f;\n    f=3/2;\n    printf(\"%f\",f);\n    return 0;\n}",
+ opts:["1.5","1.50000","3/2","1.000000"], ans:[3], why:"3/2 on kokonaislukujakolasku, joten tulos on 1, ja se muutetaan float-muotoon."},
+{id:15, cat:"Taulukot", type:"drag",
+ tpl:"Ohjelmassa on lause:\n\nint numbers[5];\n\nTäytä koko taulukko:\n\nfor(int x={0}; x<={1}; x++) {\n    printf(\"Anna luku\");\n    scanf(\"%d\", {2});\n}",
+ bank:["0","1","4","5","&numbers[x]","numbers[x]"], ans:["0","4","&numbers[x]"], why:"Taulukon indeksit ovat 0–4, ja scanf tarvitsee osoitteen."},
+{id:16, cat:"Ohjaus", type:"single", q:"Mikä seuraavista vertailuoperaattoreista tarkoittaa yhtäsuuruutta?",
+ opts:["equal","eq","&&","=","=="], ans:[4], why:"Yhtäsuuruus on ==. Yksi = on sijoitus."},
+{id:17, cat:"Funktiot", type:"single", q:"Valitse ohjelman oikea tulostus.\n\n#include <stdio.h>\n\nint main() {\n  int calculateParameters(int, int);\n  int result = calculateParameters(5, 10);\n  printf(\"%d\", result + 5);\n  return 0;\n}\n\nint calculateParameters(int a, int b) {\n  return  a + b;\n}",
+ opts:["15","0","20","error"], ans:[2], why:"5+10=15 ja 15+5=20."},
+{id:18, cat:"Taulukot", type:"multi", q:"Mitkä seuraavista määrittävät taulukkomuuttujan?",
+ opts:["myarray[10] int;","int myarray;","int myarray[10];","float myarray;"], ans:[2], why:"Taulukon määrittely on tyyppi nimi[koko]."},
+{id:19, cat:"Funktiot", type:"multi", q:"Funktio on määritelty seuraavasti:\n\nfloat calculate(int a, int b) {\n     return (float)a/(float)b;\n}\n\nMitkä seuraavista ovat kelvollisia prototyyppejä?",
+ opts:["float calculate(int , int );","calculate(int, int);","float calculate(int a, int b);","calculate(int a, int b);"], ans:[0,2], why:"Prototyypissä on paluutyyppi. Parametrien nimet ovat valinnaisia."},
+{id:20, cat:"Ohjaus", type:"single", q:"Mitä ohjelma tulostaa, kun käyttäjä antaa luvun 6?\n\n#include <stdio.h>\n\nint main()\n{\n    int x;\n    printf(\"Anna luku\\n\");\n    scanf(\"%d\",&x);\n    if(x>5){ printf(\"A \"); }\n    if(x>10){ printf(\"B \"); }\n    if(x>0){ printf(\"C \"); }\n}",
+ opts:["B C","C","A B","B","A","A C"], ans:[5], why:"6>5 ja 6>0 ovat tosia, 6>10 ei. Tulostus: A C."},
+{id:21, cat:"Taulukot", type:"multi", q:"Ohjelmassa on määritelty muuttuja:\n\nchar name[20];\n\nMillä seuraavista lauseista voidaan lukea käyttäjän antama arvo muuttujaan?",
+ opts:["scanf(\"%s\",&name[0]);","scanf(\"%d\",&name[0]);","scanf(\"%s\",name);","gets(name);","scanf(\"%s\",&name);"], ans:[0,2,3,4], why:"%s lukee merkkijonon. %d lukee kokonaisluvun, joten se ei sovi."},
+{id:22, cat:"Perusteet", type:"multi", q:"Jos ohjelmassa halutaan käyttää printf-funktiota, mikä seuraavista on lisättävä ohjelmaan?",
+ opts:["#include \"stdio.h\"","#include \"stdio.c\"","#include<stdio.h>","#include<stdio.c>"], ans:[2], why:"Oikea otsikkotiedosto on stdio.h sulkeissa < >."},
+{id:23, cat:"Perusteet", type:"multi", q:"Kuinka lisäät aiemmin kirjoitetun koodin C-ohjelmaan?",
+ opts:["#include","#get","#pre","#read"], ans:[0], why:"Toisen tiedoston sisällyttää #include-direktiivi."},
+{id:24, cat:"Perusteet", type:"multi", q:"Mitkä ovat oikean muotoisia kommentteja?",
+ opts:["*/ Comments /*","* Comments *","/* Comments */","** Comments **"], ans:[2], why:"Lohkokommentti alkaa /* ja päättyy */."},
+{id:25, cat:"Muuttujat", type:"multi", q:"Mitkä seuraavista väittämistä pitävät paikkansa?",
+ opts:["Ilmaisulla &myAge viitataan muuttujan myAge muistiosoitteeseen","char tyypiseen muuttujaan voidaan tallentaa yksi merkki","Ilmaisulla %myAge viitataan muuttujan myAge muistiosoitteeseen","char tyypiseen muuttujaan voidaan tallentaa merkkijono","Funktiolla printf voidaan lukea käyttäjän antamia merkkejä","Merkintä %d viittaa kokonaislukuun"], ans:[0,1,5], why:"& antaa osoitteen, char on yksi merkki, %d on kokonaisluku. printf tulostaa, ei lue."},
+{id:26, cat:"Syöte ja tulostus", type:"drag",
+ tpl:"prinft(\"Anna kokonaisluku\");\n\nscanf({0}, {1});",
+ bank:["\"%d\"","\"%s\"","&age","age"], ans:["\"%d\"","&age"], why:"Kokonaisluvulle käytetään %d ja muuttujan osoitetta &age."},
+{id:27, cat:"Funktiot", type:"multi", q:"Mitkä seuraavista ovat kelvollisia funktion prototyyppejä?",
+ opts:["char funct( char x, char y);","int funct(char x, char y);","double funct(char x, char y);","int funct(int x, int y);"], ans:[0,1,2,3], why:"Kaikki neljä ovat kelvollisia: paluutyyppi ja parametrit vaihtelevat."},
+{id:28, cat:"Muuttujat", type:"single", q:"Mikä seuraavista on muuttujan foo muistiosoite?",
+ opts:["address(foo)","%foo","&foo","mem(foo)"], ans:[2], why:"Muistiosoite saadaan &-operaattorilla."},
+{id:29, cat:"Taulukot", type:"single", q:"Jos ohjelmassa on seuraavat rivit, mitä tulostuu?\n\nint coords[2][2]={{1,2},{5,6}};\nprintf(\"%d\\n\",coords[1][0]);",
+ opts:["2","1,2","5","5,6"], ans:[2], why:"Rivi 1 (toinen rivi), sarake 0 on 5."},
+{id:30, cat:"Muuttujat", type:"single", q:"Mitä tämä ohjelma tulostaa?\n\nint main() {\n    int i = 0;\n    printf(\"\\n%d\\n\", i++);\n    return 0;\n}",
+ opts:["2","0","1"], ans:[1], why:"Jälkikasvatus i++ palauttaa arvon ennen kasvatusta, joten tulostuu 0."},
+{id:31, cat:"Koodaus", type:"code", q:"Positive or Negative\n\nKirjoita funktio, joka tarkistaa annetun luvun ja tulostaa \"Number is positive\", \"Number is negative\" tai \"Number is zero\".\n\nOlet, että luku on kokonaisluku, eikä virhekäsittelyä tarvita.\n\nEsimerkit:\n  negativeOrPositive(0)  -> Number is zero\n  negativeOrPositive(1)  -> Number is positive\n  negativeOrPositive(-1) -> Number is negative",
+ starter:"void negativeOrPositive(int n) {\n    \n}\n",
+ solution:"void negativeOrPositive(int n) {\n    if (n > 0) {\n        printf(\"Number is positive\");\n    } else if (n < 0) {\n        printf(\"Number is negative\");\n    } else {\n        printf(\"Number is zero\");\n    }\n}"},
+{id:32, cat:"Koodaus", type:"code", q:"Kirjoita funktio, joka saa moniulotteisen taulukon parametrina ja tulostaa taulukon kolmannen sarakkeen arvon toiselta riviltä.\n\nEsimerkki:\n  int matrix[10][10] = {{1,2,3}, {55,44,11}};\n  getItem23(matrix);   -> 11",
+ starter:"void getItem23(int matrix[10][10]) {\n    \n}\n",
+ solution:"void getItem23(int matrix[10][10]) {\n    printf(\"%d\", matrix[1][2]);\n}"},
+{id:33, cat:"Koodaus", type:"code", q:"Laske merkit: kirjoita funktio, joka saa merkkijonon, sen pituuden ja etsittävän merkin. Funktio palauttaa, kuinka monta kertaa merkki esiintyy merkkijonossa.\n\nEsimerkki:\n  countCharacters(\"Aavasaksanvaara\", 15, 'a')  -> 7\n  countCharacters(\"This is my life\", 15, 'i')  -> 3",
+ starter:"int countCharacters(char *s, int len, char c) {\n    \n}\n",
+ solution:"int countCharacters(char *s, int len, char c) {\n    int count = 0;\n    for (int i = 0; i < len; i++) {\n        if (s[i] == c) count++;\n    }\n    return count;\n}"}
+];
+
