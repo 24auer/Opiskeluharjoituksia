@@ -97,9 +97,10 @@ function renderCard() {
 
   if (q.type === "flash") {
     const fig = q.fig ? `<div class="fig">${figSvg(q.fig)}</div>` : "";
+    const tt = q.tt ? `<div class="fig">${figSvg(q.tt)}</div>` : "";
     body = !s.revealed
       ? `<div class="btns"><button class="primary" id="reveal">Näytä vastaus</button></div>`
-      : `<div class="feedback info answer">${esc(q.answer)}</div>${fig}
+      : `<div class="feedback info answer">${esc(q.answer)}</div>${fig}${tt}
          ${s.done ? `<p class="meta">Merkitty valmiiksi.</p>`
            : `<div class="btns"><button class="primary" id="know">Osasin</button><button class="ghost" id="dontknow">En osannut</button></div>`}`;
   }
@@ -110,7 +111,7 @@ function renderCard() {
       <button class="ghost" id="clr">Tyhjennä</button>
       <button class="ghost" id="showfig">Näytä malli</button></div>
       <div id="drawfb"></div>
-      <div id="figbox" class="fig hidden">${figSvg(q.fig)}</div>
+      <div id="figbox" class="fig hidden">${figSvg(q.fig)}${q.tt ? figSvg(q.tt) : ""}</div>
       <p class="meta">Piirrä hiirellä tai sormella. Tarkistus on suuntaa-antava: se katsoo, onko piirros lähellä mallia. Voit aina verrata itse.</p>`;
   }
 
