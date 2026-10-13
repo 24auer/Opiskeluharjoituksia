@@ -29,7 +29,7 @@ function renderSidebar() {
   const list = visible();
   $("#qlist").innerHTML = list.map((q,i) => {
     const s = state[q.id];
-    const cls = (i===idx?"current ":"") + (s && s.done ? "done" : "");
+    const cls = (i===idx?"current ":"") + (s && s.done ? "done" : (s && s.review ? "review" : "todo"));
     return `<button class="${cls}" data-i="${i}">${q.label ?? q.id}</button>`;
   }).join("");
   document.querySelectorAll("#qlist button").forEach(b => b.onclick = () => { idx = +b.dataset.i; render(); });
@@ -160,6 +160,7 @@ function feedbackFor(q, s) {
 }
 
 function bindCard(q, s) {
+  $("#card").classList.toggle("review", !!s.review);   // oranssi kortti: "en osannut"
   if (q.type === "single" || q.type === "multi") {
     document.querySelectorAll(`input[name="q${q.id}"]`).forEach(inp => inp.onchange = () => {
       if (q.type === "single") s.answer = +inp.value;
@@ -200,8 +201,14 @@ function bindCard(q, s) {
 
   if (q.type === "flash") {
     $("#reveal") && ($("#reveal").onclick = () => { s.revealed = true; render(); });
-    $("#know") && ($("#know").onclick = () => { s.done = true; playChime(); render(); });
-    $("#dontknow") && ($("#dontknow").onclick = () => { s.done = true; render(); });
+    $("#know") && ($("#know").onclick = () => { s.done = true; s.review = false; playChime(); render(); });
+    $("#dontknow") && ($("#dontknow").onclick = () => {
+      s.review = true;
+      $("#card").classList.add("review");
+      $("#dontknow").textContent = "Kerrataan myöhemmin";
+      $("#dontknow").disabled = true;
+      renderSidebar();
+    });
   }
 
   if (q.type === "draw") setupPad(q, s);
@@ -358,7 +365,7 @@ $("#next").onclick = () => { if (idx < visible().length - 1) { idx++; render(); 
 const prank = $("#prank");
 const showPrank = () => prank.classList.remove("hidden");
 prank.onclick = () => prank.classList.add("hidden");
-// salainen linkki: gnomea klikattaessa näkyy prank-kuva ja avautuu video uudessa välilehdessä (monka)
+// salainen linkki: gnomea klikattaessa näkyy prank-kuva ja avautuu video uudessa välilehdessä
 $("#gnomecorner").onclick = () => {
   showPrank();
   window.open("https://www.youtube.com/watch?v=6n3pFFPSlW4", "_blank", "noopener");
