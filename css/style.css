@@ -143,7 +143,7 @@
   .qlist { gap:6px; }
   .qlist button { border-radius:10px; font-size:13px; }
   #progress { font-variant-numeric:tabular-nums; }
-  main { padding:44px 48px; max-width:980px; }
+  main { padding:44px 48px; max-width:none; }
   .card { border-radius:22px; padding:38px 42px; }
   .meta { font-size:12px; letter-spacing:.02em; }
   .badge { border:1px solid #8f3a72; background:#000; color:#c77db0; border-radius:999px; font-size:12px; font-weight:600; padding:4px 12px; }
