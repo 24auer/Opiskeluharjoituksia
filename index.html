@@ -15,6 +15,16 @@
     main > .card, main > .nav { width:100%; max-width:900px; }
   }
 </style>
+<style>
+  /* tilavärit: vihreä = osaan, keltainen = en osannut, punainen = ei tehty */
+  .qlist button.todo { border-color:#ef4444 !important; color:#fca5a5 !important; }
+  .qlist button.review { background:#facc15 !important; border-color:#facc15 !important; color:#000 !important; }
+  .qlist button.done { background:#15803d !important; border-color:#22c55e !important; color:#fff !important; }
+  .card.review { border-color:#f97316 !important; background:rgba(249,115,22,.14) !important; }
+  .legend { display:flex; flex-direction:column; gap:6px; font-size:12px; color:#c9a0bd; margin:14px 0; }
+  .dot { display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:8px; vertical-align:middle; }
+  .dot.g { background:#22c55e; } .dot.y { background:#facc15; } .dot.r { background:#ef4444; }
+</style>
 </head>
 <body>
 
@@ -47,6 +57,11 @@
     <input id="search" class="search" placeholder="Hae tunnuksella, esim. M12 tai D5" spellcheck="false">
     <div id="qlist" class="qlist"></div>
   </details>
+  <div class="legend">
+    <span><i class="dot g"></i>osaan</span>
+    <span><i class="dot y"></i>en osannut</span>
+    <span><i class="dot r"></i>ei tehty</span>
+  </div>
   <div class="progwrap">
     <div class="progbar"><span id="progfill"></span></div>
     <p class="progtext">Valmiina <span id="progress">0/33</span></p>
