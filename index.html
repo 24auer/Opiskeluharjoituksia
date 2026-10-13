@@ -5,6 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ohjelmointi ja digitekniikka</title>
 <link rel="stylesheet" href="css/style.css">
+<style>
+  /* asettelun korjaus: sivupalkki vasemmalla, tehtäväkortti keskellä pääaluetta */
+  @media (min-width:801px){
+    body { display:grid !important; grid-template-columns:280px minmax(0,1fr) !important; align-items:start; }
+    header.topbar { grid-column:1 / -1; }
+    aside { grid-column:1; }
+    main { grid-column:2; min-width:0; display:flex !important; flex-direction:column; align-items:center; }
+    main > .card, main > .nav { width:100%; max-width:900px; }
+  }
+</style>
 </head>
 <body>
 
