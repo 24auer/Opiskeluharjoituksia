@@ -220,6 +220,15 @@ function bindCard(q, s) {
 
   if (q.type === "code") {
     $("#editor").oninput = e => { s.answer = e.target.value; };
+
+    // tab ei enää mene nappeihin vaan lisää 4 välilyöntiä
+    $("#editor").onkeydown = e => {
+      if (e.key !== "Tab" || e.ctrlKey || e.metaKey || e.altKey) return;
+      e.preventDefault();
+      const ta = e.target, a = ta.selectionStart, b = ta.selectionEnd;
+      ta.setRangeText("    ", a, b, "end");
+      s.answer = ta.value;
+    };
     $("#showsol").onclick = () => $("#solbox").classList.toggle("hidden");
     $("#reset").onclick = () => { s.answer = null; $("#editor").value = q.starter; $("#codefb").innerHTML = ""; };
     $("#runcheck").onclick = async () => {
@@ -255,7 +264,8 @@ function playChime() {
   if (muted) return;
   audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
   const t = audioCtx.currentTime;
-  // nouseva sointu: C5 - E5 - G5 - C6
+
+  // blim blom
   [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => {
     const start = t + i * 0.09;
     const osc = audioCtx.createOscillator();
@@ -362,11 +372,11 @@ function applySearch() {
 $("#prev").onclick = () => { if (idx > 0) { idx--; render(); } };
 $("#next").onclick = () => { if (idx < visible().length - 1) { idx++; render(); } };
 
-// gnome-kuva ja "youve been gnomed" -linkki näyttävät prank-kuvan
+// shh
 const prank = $("#prank");
 const showPrank = () => prank.classList.remove("hidden");
 prank.onclick = () => prank.classList.add("hidden");
-// salainen linkki: gnomea klikattaessa näkyy prank-kuva ja avautuu video uudessa välilehdessä
+// who knows
 $("#gnomecorner").onclick = () => {
   showPrank();
   window.open("https://www.youtube.com/watch?v=6n3pFFPSlW4", "_blank", "noopener");
@@ -397,3 +407,44 @@ paintMute();
 document.querySelector("aside").appendChild(muteBtn);
 
 render();
+
+// ---------------- edistymisen vienti ja tuonti (siirto toiseen selaimeen) ----------------
+// Vienti lataa kaiken tallennetun tilan yhtenä JSON-tiedostona. Tuonti lukee sen ja korvaa tilan.
+/* Ei toimi vielä
+function setTransferMsg(text) {
+  const m = $("#transfermsg");
+  if (m) m.textContent = text;
+}
+$("#exportprog") && ($("#exportprog").onclick = () => {
+  try {
+    const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "harjoitus-edistyminen.json";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    setTransferMsg("Tiedosto ladattiin. Tuo se toisessa selaimessa.");
+  } catch (e) {
+    setTransferMsg("Vienti ei onnistunut.");
+  }
+});
+$("#importprog") && ($("#importprog").onchange = async (ev) => {
+  const file = ev.target.files && ev.target.files[0];
+  if (!file) return;
+  try {
+    const data = JSON.parse(await file.text());
+    if (!data || typeof data !== "object" || Array.isArray(data)) throw new Error("väärä muoto");
+    Object.keys(state).forEach(k => delete state[k]);
+    Object.assign(state, data);
+    saveProgress();
+    render();
+    setTransferMsg("Edistyminen tuotiin onnistuneesti.");
+  } catch (e) {
+    setTransferMsg("Tuonti ei onnistunut. Valitse tiedosto, jonka olet vienyt tältä sivulta.");
+  }
+  ev.target.value = "";
+});
+*/
